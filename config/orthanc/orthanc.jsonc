@@ -1,12 +1,25 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Orthanc Team SRL <info@orthanc.team>
-//
-// SPDX-License-Identifier: CC0-1.0
-
 {
-    "Name" : "Orthanc",
+    "Name" : "Organization Name",
     "RemoteAccessAllowed" : true,
     "StableAge" : 60,
+    "DicomAet": "ORTHANC",
+    "DicomPort": 4242,
     "DicomAssociationCloseDelay" : 5,
+    "DicomAlwaysAllowEcho": true,
+    "DicomAlwaysAllowStore": true,
+    "DicomAlwaysAllowFind": true,
+    "DicomAlwaysAllowGet": false,
+    "DicomCheckCalledAet": false,
+    "StorageCompression" : true,
+    "LimitFindResults": 100,
+    "LimitFindInstances": 200,
+    "StorageAccessOnFind": "Never",
+    "SaveJobs": false,
+    "TcpNoDelay": true, 
+    "KeepAlive": true,
+    //"IngestTranscodingOfUncompressed" : true,
+    //"IngestTranscodingOfCompressed" : false,
+    //"IngestTranscoding" : "1.2.840.10008.1.2.4.80",
     "OrthancExplorer2": {
         "IsDefaultUI": true,
         "UiOptions": {
@@ -30,9 +43,9 @@
     	"EnableStorage" : false,
     	"Host" : "orthanc-db",
     	"Port" : 5432,
-    	//"Database" : "${DB_NAME}",
-    	//"Username" : "${DB_USERNAME}",
-    	//"Password" : "${DB_PASSWORD}",
+    	"Database" : "orthancdb",
+    	"Username" : "orthancdbusr",
+    	"Password" : "orthancdbpsw",
         "IndexConnectionsCount" : 10,
         "TransactionMode" : "ReadCommitted",
     	"EnableSsl" : false,
@@ -89,6 +102,11 @@
             // deletes
             ["delete" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|delete"]
         ]
+    },
+    "DicomWeb" : {
+        "Enable" : true,
+        "EnableWado" : true,
+        "Ssl" : false
     },
     "Plugins": [
       "/usr/share/orthanc/plugins-available/libOrthancPostgreSQLIndex.so",

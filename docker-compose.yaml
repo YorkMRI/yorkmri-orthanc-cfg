@@ -1,7 +1,9 @@
 services:
   nginx:
     image: orthancteam/orthanc-nginx:24.2.0
-    depends_on: [orthanc, orthanc-auth-service]
+    depends_on: 
+      - orthanc
+      - orthanc-auth-service
     restart: unless-stopped
     ports: ["80:80"]
 # if setting ENABLE_HTTPS: "true" env var, uncomment the following 4 lines and comment the line with 'ports: ["80:80"]'
@@ -15,14 +17,15 @@ services:
       ENABLE_ORTHANC_TOKEN_SERVICE: "false"
       ENABLE_HTTPS: "false"
 
-
   # first setup through configuration file and build step
   orthanc:
     image: orthancteam/orthanc:24.2.0
+    container_name: orthanc-backend
     volumes:
-      - orthanc-storage:/var/lib/orthanc/db
+      - ./data/storage-orthanc:/var/lib/orthanc/db
       - ./config/orthanc/orthanc.jsonc:/etc/orthanc/orthanc.json
-    depends_on: [orthanc-db]
+    depends_on: 
+      - orthanc-db
     restart: unless-stopped
     environment:
       VERBOSE_ENABLED: "true"
@@ -45,24 +48,29 @@ services:
           "demo-script-user": "demo-script-password",
           "orthanc-oe2-user": "orthanc-oe2-password"
         }
-      
+        
   orthanc-db:
     image: postgres:17
     restart: unless-stopped
-    volumes: ["orthanc-db:/var/lib/postgresql/data"]
+    container_name: orthanc-db
+    shm_size: 128mb
+    volumes: 
+      - ./data/pgdata-orthanc:/var/lib/postgresql/data
     environment:
-      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_PASSWORD: "orthancdbpsw"
+      POSTGRES_USER: "orthancdbusr"
+      POSTGRES_DB: "orthancdb"
 
   keycloak:
     image: orthancteam/orthanc-keycloak:24.2.0
-    depends_on: [keycloak-db]
+    depends_on: 
+      - keycloak-db
     environment:
       KEYCLOAK_ADMIN: "admin"
       KEYCLOAK_ADMIN_PASSWORD: "change-me"
-      KC_DB: "postgres"
-      KC_DB_URL: "jdbc:postgresql://keycloak-db:5432/keycloak"
-      KC_DB_USERNAME: "keycloak"
-      KC_DB_PASSWORD: "keycloak"
+      KC_DB_URL: "jdbc:postgresql://keycloak-db:5432/keycloakdb"
+      KC_DB_USERNAME: "keycloakdbusr"
+      KC_DB_PASSWORD: "keycloakdbpsw"
       # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
       # KC_HOSTNAME_URL: "https://mydomain.com/keycloak"
       # KC_HOSTNAME_ADMIN_URL: "https://mydomain.com/keycloak"
@@ -70,13 +78,11 @@ services:
   keycloak-db:
     image: postgres:17
     restart: unless-stopped
-    volumes: ["keycloak-db:/var/lib/postgresql/data"]
+    container_name: keycloak-db
+    shm_size: 128mb
+    volumes: 
+      - ./data/pgdata-keycloak:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: "keycloak"
-      POSTGRES_USER: "keycloak"
-      POSTGRES_DB: "keycloak"
-
-volumes:
-  orthanc-storage:
-  orthanc-db:
-  keycloak-db:
+      POSTGRES_PASSWORD: "keycloakdbpsw"
+      POSTGRES_USER: "keycloakdbusr"
+      POSTGRES_DB: "keycloakdb"
