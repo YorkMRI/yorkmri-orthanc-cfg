@@ -14,12 +14,12 @@
     "LimitFindResults": 100,
     "LimitFindInstances": 200,
     "StorageAccessOnFind": "Never",
-    "SaveJobs": false,
+    "SaveJobs": true, // or the job won't store
     "TcpNoDelay": true, 
     "KeepAlive": true,
-    //"IngestTranscodingOfUncompressed" : true,
-    //"IngestTranscodingOfCompressed" : false,
-    //"IngestTranscoding" : "1.2.840.10008.1.2.4.80",
+    "IngestTranscodingOfUncompressed" : true,
+    "IngestTranscodingOfCompressed" : false,
+    "IngestTranscoding" : "1.2.840.10008.1.2.4.80",
     "OrthancExplorer2": {
         "IsDefaultUI": true,
         "UiOptions": {

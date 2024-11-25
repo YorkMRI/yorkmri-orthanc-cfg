@@ -1,11 +1,15 @@
 services:
-  nginx:
-    image: orthancteam/orthanc-nginx:24.2.0
+  nginx-proxy:
+    image: nginx:1.23.4
+    container_name: nginx-proxy
     depends_on: 
       - orthanc
       - orthanc-auth-service
     restart: unless-stopped
-    ports: ["80:80"]
+    ports: 
+      - 80:80
+    volumes:
+      - ./config/nginx/:/etc/nginx/:ro
 # if setting ENABLE_HTTPS: "true" env var, uncomment the following 4 lines and comment the line with 'ports: ["80:80"]'
 #    ports: ["443:443"]
 #    volumes:
@@ -20,15 +24,20 @@ services:
   # first setup through configuration file and build step
   orthanc:
     image: orthancteam/orthanc:24.2.0
-    container_name: orthanc-backend
+    container_name: orthanc-backend # Path to the configuration files (stored as secrets)
+    command: /run/secrets/ 
     volumes:
-      - ./data/storage-orthanc:/var/lib/orthanc/db
-      - ./config/orthanc/orthanc.jsonc:/etc/orthanc/orthanc.json
+      - ./data/storage-orthanc:/run/secrets/OrthancStorage
+      #- ./config/orthanc/orthanc.jsonc:/etc/orthanc/orthanc.json
     depends_on: 
       - orthanc-db
     restart: unless-stopped
     environment:
       VERBOSE_ENABLED: "true"
+    secrets:
+      - orthanc.json
+    healthcheck:
+      disable: true 
 
   orthanc-auth-service:
     image: orthancteam/orthanc-auth-service:24.2.0
@@ -86,3 +95,7 @@ services:
       POSTGRES_PASSWORD: "keycloakdbpsw"
       POSTGRES_USER: "keycloakdbusr"
       POSTGRES_DB: "keycloakdb"
+
+secrets:
+  orthanc.json:
+    file: ./config/orthanc/orthanc.jsonc
