@@ -36,11 +36,12 @@
         },
         "Keycloak" : {
             "Enable": true,
-            "Url": "http://localhost/keycloak/", // TODO: change that according to nginx config
+            "Url": "https://orthweb.digihunch.com/keycloak/", // TODO: change that according to nginx config
             "Realm": "orthanc",
             "ClientId": "orthanc"
         }
     },
+    "StorageDirectory": "/var/lib/orthanc/data",
     "PostgreSQL" : {
     	"EnableIndex" : true,
     	"EnableStorage" : false,

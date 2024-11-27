@@ -7,14 +7,11 @@ services:
       - orthanc-auth-service
     restart: unless-stopped
     ports: 
-      - 80:80
+      - 443:443
     volumes:
+      - ./config/certs/orthweb.digihunch.com.pem:/usr/local/nginx/conf/site.pem:ro
       - ./config/nginx/:/etc/nginx/:ro
-# if setting ENABLE_HTTPS: "true" env var, uncomment the following 4 lines and comment the line with 'ports: ["80:80"]'
-#    ports: ["443:443"]
-#    volumes:
-#      - /.../crt.pem:/etc/nginx/tls/crt.pem
-#      - /.../key.pem:/etc/nginx/tls/key.pem
+
     environment:
       ENABLE_ORTHANC: "true"
       ENABLE_KEYCLOAK: "true"
@@ -27,7 +24,7 @@ services:
     container_name: orthanc-backend # Path to the configuration files (stored as secrets)
     command: /etc/orthanc/
     volumes:
-      - ./data/storage-orthanc:/run/secrets/OrthancStorage
+      - ./data/storage-orthanc:/var/lib/orthanc/data
       - ./config/orthanc/:/etc/orthanc/
     depends_on: 
       - orthanc-db
@@ -81,8 +78,8 @@ services:
       KC_DB_USERNAME: "keycloakdbusr"
       KC_DB_PASSWORD: "keycloakdbpsw"
       # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
-      # KC_HOSTNAME_URL: "https://mydomain.com/keycloak"
-      # KC_HOSTNAME_ADMIN_URL: "https://mydomain.com/keycloak"
+      KC_HOSTNAME_URL: "https://orthweb.digihunch.com/keycloak"
+      KC_HOSTNAME_ADMIN_URL: "https://orthweb.digihunch.com/keycloak"
     
   keycloak-db:
     image: postgres:17
