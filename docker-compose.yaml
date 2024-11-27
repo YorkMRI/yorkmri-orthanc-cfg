@@ -25,17 +25,17 @@ services:
   orthanc:
     image: orthancteam/orthanc:24.2.0
     container_name: orthanc-backend # Path to the configuration files (stored as secrets)
-    command: /run/secrets/ 
+    command: /etc/orthanc/
     volumes:
       - ./data/storage-orthanc:/run/secrets/OrthancStorage
-      #- ./config/orthanc/orthanc.jsonc:/etc/orthanc/orthanc.json
+      - ./config/orthanc/:/etc/orthanc/
     depends_on: 
       - orthanc-db
     restart: unless-stopped
     environment:
       VERBOSE_ENABLED: "true"
     secrets:
-      - orthanc.json
+      - site.pem 
     healthcheck:
       disable: true 
 
@@ -97,5 +97,5 @@ services:
       POSTGRES_DB: "keycloakdb"
 
 secrets:
-  orthanc.json:
-    file: ./config/orthanc/orthanc.jsonc
+  site.pem:
+    file: ./config/certs/orthweb.digihunch.com.pem 
