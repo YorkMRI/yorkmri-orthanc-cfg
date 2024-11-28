@@ -12,16 +12,9 @@ services:
       - ./config/certs/orthweb.digihunch.com.pem:/usr/local/nginx/conf/site.pem:ro
       - ./config/nginx/:/etc/nginx/:ro
 
-    environment:
-      ENABLE_ORTHANC: "true"
-      ENABLE_KEYCLOAK: "true"
-      ENABLE_ORTHANC_TOKEN_SERVICE: "false"
-      ENABLE_HTTPS: "false"
-
-  # first setup through configuration file and build step
   orthanc:
     image: orthancteam/orthanc:24.2.0
-    container_name: orthanc-backend # Path to the configuration files (stored as secrets)
+    container_name: orthanc-backend
     command: /etc/orthanc/
     volumes:
       - ./data/storage-orthanc:/var/lib/orthanc/data
@@ -38,16 +31,17 @@ services:
 
   orthanc-auth-service:
     image: orthancteam/orthanc-auth-service:24.2.0
-    # disable ports in prod or at least don't make this webservice public !
     ports: ["8000:8000"]
     restart: unless-stopped
+    volumes:
+      - ./config/orthanc_auth_service/permissions.json:/orthanc_auth_service/permissions.json
     environment:
       SECRET_KEY: "my-secret-key"
       ENABLE_KEYCLOAK: "true"
       KEYCLOAK_URI: "http://keycloak:8080/realms/orthanc/"
-      #PERMISSIONS_FILE_PATH: "path_to_the file"
-      PUBLIC_ORTHANC_ROOT: "http://localhost/orthanc/"
-      PUBLIC_LANDING_ROOT: "http://localhost/orthanc/ui/app/token-landing.html"
+      # Adjust the following two variables according to https setup
+      PUBLIC_ORTHANC_ROOT: "https://orthweb.digihunch.com/orthanc/"
+      PUBLIC_LANDING_ROOT: "https://orthweb.digihunch.com/orthanc/ui/app/token-landing.html"
       USERS: |
         {
           "share-user": "share-password",
