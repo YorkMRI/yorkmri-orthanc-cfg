@@ -1,8 +1,9 @@
 {
-    "Name" : "Organization Name",
+    "Name" : "${ORG_NAME}",
     "RemoteAccessAllowed" : true,
+    "SslEnabled" : false,
     "StableAge" : 60,
-    "DicomAet": "ORTHANC",
+    "DicomAet": "ORTHANC_DCM",
     "DicomPort": 4242,
     "DicomAssociationCloseDelay" : 5,
     "DicomAlwaysAllowEcho": true,
@@ -27,7 +28,7 @@
         "IsDefaultUI": true,
         "UiOptions": {
             "EnableShares": true,
-            "DefaultShareDuration": 0,
+            "DefaultShareDuration": 15,
             "ShareDurations": [0, 7, 15, 30, 90, 365]
         },
         "Tokens" : {
@@ -36,9 +37,9 @@
         },
         "Keycloak" : {
             "Enable": true,
-            "Url": "https://orthweb.digihunch.com/keycloak/", // TODO: change that according to nginx config
-            "Realm": "orthanc",
-            "ClientId": "orthanc"
+            "Url": "${KC_URL}",
+            "Realm": "${KC_REALM}",
+            "ClientId": "${KC_CLIENT_ID}"
         }
     },
     "StorageDirectory": "/var/lib/orthanc/data",
@@ -47,19 +48,19 @@
     	"EnableStorage" : false,
     	"Host" : "orthanc-db",
     	"Port" : 5432,
-    	"Database" : "orthancdb",
-    	"Username" : "orthancdbusr",
-    	"Password" : "orthancdbpsw",
+    	"Database" : "${DB_NAME}",
+    	"Username" : "${DB_USERNAME}",
+    	"Password" : "${DB_PASSWORD}",
         "IndexConnectionsCount" : 10,
         "TransactionMode" : "ReadCommitted",
     	"EnableSsl" : false,
     	"Lock" : false
     },
-    "AuthenticationEnabled": false,     // because it is handled by the authorization plugin
+    "AuthenticationEnabled": false,
     "Authorization": {
-        "WebServiceRootUrl": "http://orthanc-auth-service:8000/",
-        "WebServiceUsername": "share-user",
-        "WebServicePassword": "share-password",
+        "WebServiceRootUrl": "${AUTH_SVC_URL}",
+        "WebServiceUsername": "${AUTH_SVC_UN}",
+        "WebServicePassword": "${AUTH_SVC_PSW}",
         "StandardConfigurations" : [
             "osimis-web-viewer",
             "stone-webviewer",

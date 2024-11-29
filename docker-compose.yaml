@@ -1,19 +1,21 @@
 services:
   nginx-proxy:
-    image: nginx:1.23.4
+    image: $NGINX_DOCKER_IMAGE
     container_name: nginx-proxy
     depends_on: 
-      - orthanc
+      - orthanc-service
       - orthanc-auth-service
+      - keycloak-service
     restart: unless-stopped
     ports: 
       - 443:443
+      - 11112:11112
     volumes:
-      - ./config/certs/orthweb.digihunch.com.pem:/usr/local/nginx/conf/site.pem:ro
+      - ./$SITE_KEY_CERT_FILE:/usr/local/nginx/conf/site.pem:ro
       - ./config/nginx/:/etc/nginx/:ro
 
-  orthanc:
-    image: orthancteam/orthanc:24.2.0
+  orthanc-service:
+    image: $ORTHANC_DOCKER_IMAGE
     container_name: orthanc-backend
     command: /etc/orthanc/
     volumes:
@@ -23,70 +25,76 @@ services:
       - orthanc-db
     restart: unless-stopped
     environment:
-      VERBOSE_ENABLED: "true"
-    secrets:
-      - site.pem 
+      VERBOSE_ENABLED: $VERBOSE_ENABLED
+      ORG_NAME: $ORG_NAME
+      DB_ADDR: $ORTHANC_DB_HOST
+      DB_NAME: $ORTHANC_DB_NAME
+      DB_USERNAME: $ORTHANC_DB_USERNAME
+      DB_PASSWORD: $ORTHANC_DB_PASSWORD
+      KC_URL: "https://${SITE_NAME}/keycloak/"
+      KC_REALM: $ORTHANC_KC_REALM
+      KC_CLIENT_ID: $ORTHANC_KC_CLIENT_ID
+      AUTH_SVC_URL: "http://orthanc-auth-service:8000/"
+      AUTH_SVC_UN: $AUTH_SVC_UN
+      AUTH_SVC_PSW: $AUTH_SVC_PSW
     healthcheck:
       disable: true 
 
-  orthanc-auth-service:
-    image: orthancteam/orthanc-auth-service:24.2.0
-    ports: ["8000:8000"]
+  orthanc-auth-service: 
+    image: $AUTH_SERVICE_DOCKER_IMAGE
+    container_name: authorization-service
+    depends_on:
+      - keycloak-service
     restart: unless-stopped
     volumes:
       - ./config/orthanc_auth_service/permissions.json:/orthanc_auth_service/permissions.json
     environment:
       SECRET_KEY: "my-secret-key"
       ENABLE_KEYCLOAK: "true"
-      KEYCLOAK_URI: "http://keycloak:8080/realms/orthanc/"
+      KEYCLOAK_URI: "http://keycloak-service:8080/realms/orthanc/"
       # Adjust the following two variables according to https setup
-      PUBLIC_ORTHANC_ROOT: "https://orthweb.digihunch.com/orthanc/"
-      PUBLIC_LANDING_ROOT: "https://orthweb.digihunch.com/orthanc/ui/app/token-landing.html"
+      PUBLIC_ORTHANC_ROOT: "https://${SITE_NAME}/orthanc/"
+      PUBLIC_LANDING_ROOT: "https://${SITE_NAME}/orthanc/ui/app/token-landing.html"
       USERS: |
         {
-          "share-user": "share-password",
-          "demo-script-user": "demo-script-password",
-          "orthanc-oe2-user": "orthanc-oe2-password"
+          "${AUTH_SVC_UN}": "${AUTH_SVC_PSW}"
         }
-        
+
+  keycloak-service:
+    image: $KEYCLOAK_DOCKER_IMAGE
+    container_name: keycloak-backend
+    depends_on: 
+      - keycloak-db
+    environment:
+      KEYCLOAK_ADMIN: $KC_ADMIN_USR
+      KEYCLOAK_ADMIN_PASSWORD: $KC_ADMIN_PSW
+      KC_DB_URL: "jdbc:postgresql://${KC_DB_EP}/${KC_DB_NAME}"
+      KC_DB_USERNAME: $KC_DB_USERNAME
+      KC_DB_PASSWORD: $KC_DB_PASSWORD
+      # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
+      KC_HOSTNAME_URL: "https://${SITE_NAME}/keycloak"
+      KC_HOSTNAME_ADMIN_URL: "https://${SITE_NAME}/keycloak"
+
   orthanc-db:
-    image: postgres:17
+    image: $POSTGRESQL_DOCKER_IMAGE
     restart: unless-stopped
     container_name: orthanc-db
     shm_size: 128mb
     volumes: 
       - ./data/pgdata-orthanc:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: "orthancdbpsw"
-      POSTGRES_USER: "orthancdbusr"
-      POSTGRES_DB: "orthancdb"
+      POSTGRES_DB: $ORTHANC_DB_NAME
+      POSTGRES_USER: $ORTHANC_DB_USERNAME
+      POSTGRES_PASSWORD: $ORTHANC_DB_PASSWORD
 
-  keycloak:
-    image: orthancteam/orthanc-keycloak:24.2.0
-    depends_on: 
-      - keycloak-db
-    environment:
-      KEYCLOAK_ADMIN: "admin"
-      KEYCLOAK_ADMIN_PASSWORD: "change-me"
-      KC_DB_URL: "jdbc:postgresql://keycloak-db:5432/keycloakdb"
-      KC_DB_USERNAME: "keycloakdbusr"
-      KC_DB_PASSWORD: "keycloakdbpsw"
-      # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
-      KC_HOSTNAME_URL: "https://orthweb.digihunch.com/keycloak"
-      KC_HOSTNAME_ADMIN_URL: "https://orthweb.digihunch.com/keycloak"
-    
   keycloak-db:
-    image: postgres:17
+    image: $POSTGRESQL_DOCKER_IMAGE
     restart: unless-stopped
     container_name: keycloak-db
     shm_size: 128mb
     volumes: 
       - ./data/pgdata-keycloak:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: "keycloakdbpsw"
-      POSTGRES_USER: "keycloakdbusr"
-      POSTGRES_DB: "keycloakdb"
-
-secrets:
-  site.pem:
-    file: ./config/certs/orthweb.digihunch.com.pem 
+      POSTGRES_DB: $KC_DB_NAME
+      POSTGRES_USER: $KC_DB_USERNAME
+      POSTGRES_PASSWORD: $KC_DB_PASSWORD
