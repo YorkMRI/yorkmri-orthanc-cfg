@@ -46,7 +46,7 @@
     "PostgreSQL" : {
     	"EnableIndex" : true,
     	"EnableStorage" : false,
-    	"Host" : "orthanc-db",
+    	"Host" : "${DB_HOST}",
     	"Port" : 5432,
     	"Database" : "${DB_NAME}",
     	"Username" : "${DB_USERNAME}",

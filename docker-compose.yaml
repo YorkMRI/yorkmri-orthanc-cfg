@@ -27,7 +27,7 @@ services:
     environment:
       VERBOSE_ENABLED: $VERBOSE_ENABLED
       ORG_NAME: $ORG_NAME
-      DB_ADDR: $ORTHANC_DB_HOST
+      DB_HOST: $ORTHANC_DB_HOST
       DB_NAME: $ORTHANC_DB_NAME
       DB_USERNAME: $ORTHANC_DB_USERNAME
       DB_PASSWORD: $ORTHANC_DB_PASSWORD
@@ -68,7 +68,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: $KC_ADMIN_USR
       KEYCLOAK_ADMIN_PASSWORD: $KC_ADMIN_PSW
-      KC_DB_URL: "jdbc:postgresql://${KC_DB_EP}/${KC_DB_NAME}"
+      KC_DB_URL: "jdbc:postgresql://${KC_DB_HOST}:5432/${KC_DB_NAME}"
       KC_DB_USERNAME: $KC_DB_USERNAME
       KC_DB_PASSWORD: $KC_DB_PASSWORD
       # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
