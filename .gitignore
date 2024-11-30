@@ -5,3 +5,5 @@
 data/**
 log/**
 config/certs/**
+docker-compose.yaml
+config/orthanc/orthanc.json
