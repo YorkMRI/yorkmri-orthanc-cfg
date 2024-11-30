@@ -35,8 +35,8 @@ local:
 	@cp docker-compose.yaml.local docker-compose.yaml
 ec2:
 	$(info --- Configuring Orthanc on EC2 with S3 and RDS storage ---) 
-	@jq --argjson s3_child "$(cat config/orthanc/s3_cfg.json)" '. + $s3_child | del(.StorageDirectory)' config/orthanc/orthanc.json.local > config/orthanc/orthanc.json
-	@yq e 'del(.services.keycloak-db, .services.orthanc-db) | .services.orthanc-service.environment.S3_BUCKET = "$X" | .services.orthanc-service.environment.S3_REGION = "$Y"' docker-compose-orig.yaml > docker-compose.yaml
+	@jq '.AwsS3Storage = {ConnectionTimeout: 30, RequestTimeout: 1200, RootPath: "image_arvhie", StorageStructure: "flat", BucketName: "$(S3_BUCKET)", Region: "$(S3_REGION)"} | del(.StorageDirectory)' config/orthanc/orthanc.json.local > config/orthanc/orthanc.json
+	@yq e 'del(.services.keycloak-db, .services.orthanc-db) | .services.orthanc-service.depends_on |= map(select(. != "orthanc-db")) | .services.keycloak-service.depends_on |= map(select(. != "keycloak-db"))' docker-compose.yaml.local > docker-compose.yaml
 done:
 	$(info --- Configuration completed ---)
 	@echo [makefile] launch the application with docker compose up
