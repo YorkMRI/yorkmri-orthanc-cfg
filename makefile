@@ -46,4 +46,7 @@ ec2:
 	@echo [makefile] updated configuration on ec2 
 done:
 	$(info --- Configuration completed ---)
-	@echo [makefile] launch the application with docker compose up
+	@echo [makefile] Bootstrapping process:, , then fill 
+	@echo [makefile] 1. Run docker compose up and grab the value for KEYCLOAK_CLIENT_SECRET from stdout
+	@echo [makefile] 2. Edit compose file, update value for KEYCLOAK_CLIENT_SECRET, and set ENABLE_KEYCLOAK_API_KEYS to true
+	@echo [makefile] 3. Restart the application (docker compose down && docker compose up)

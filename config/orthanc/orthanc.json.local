@@ -70,8 +70,11 @@
         "Permissions" : [
             ["post", "^/auth/tokens/decode$", ""],
 
-            ["post", "^/tools/find$", "all|view"],
-            ["get", "^/tools/labels$", "all|view"],
+            ["post", "^/tools(.*)$", "all"],
+            ["get", "^/tools(.*)$", "all"],
+
+            ["post", "^/tools/find$", "view"],
+            ["get", "^/tools/labels$", "view"],
 
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|view"],
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/(studies|study|series|instances)$", "all|view"],
