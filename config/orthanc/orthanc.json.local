@@ -62,10 +62,10 @@
         "WebServiceUsername": "${AUTH_SVC_UN}",
         "WebServicePassword": "${AUTH_SVC_PSW}",
         "StandardConfigurations" : [
-            "osimis-web-viewer",
             "stone-webviewer",
             "orthanc-explorer-2"
         ],
+        "TokenHttpHeaders" : [ "api-key" ],
         "CheckedLevel": "studies",
         "Permissions" : [
             ["post", "^/auth/tokens/decode$", ""],

@@ -11,8 +11,12 @@ function OnStableStudy(studyId, tags, metadata)
   --PrintRecursive(tags)
   local studyInstUid = tags["StudyInstanceUID"] 
   local referringPhysicianName = tags["ReferringPhysicianName"]
-  print('OnStableStudy: StableAge elapsed, processing study ' .. studyInstUid .. ' with ReferringPhysician ' .. referringPhysicianName)
-  RestApiPut("/studies/" .. studyId .. "/labels/refdoc-" .. makeValidLabel(referringPhysicianName), '')
+  if referringPhysicianName == nil or referringPhysicianName == '' then
+    print('OnStableStudy: StableAge elapsed, processing study ' .. studyInstUid .. ' but ReferringPhysician is null or blank ')
+  else
+    print('OnStableStudy: StableAge elapsed, labelling study ' .. studyInstUid .. ' with ReferringPhysician ' .. referringPhysicianName)
+    RestApiPut("/studies/" .. studyId .. "/labels/refdoc-" .. makeValidLabel(referringPhysicianName), '')
+  end
 end
 
 function Finalize()

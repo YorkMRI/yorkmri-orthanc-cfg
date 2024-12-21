@@ -52,6 +52,9 @@ services:
       SECRET_KEY: "my-secret-key"
       ENABLE_KEYCLOAK: "true"
       KEYCLOAK_URI: "http://keycloak-service:8080/realms/orthanc/"
+      KEYCLOAK_ADMIN_URI: "http://keycloak-service:8080/admin/realms/orthanc/"
+      #KEYCLOAK_CLIENT_SECRET: "uncomment-and-fill-me-in-after-bootstrapping"
+      #ENABLE_KEYCLOAK_API_KEYS: "true"    # uncomment after bootstrapping
       # Adjust the following two variables according to https setup
       PUBLIC_ORTHANC_ROOT: "https://${SITE_NAME}/orthanc/"
       PUBLIC_LANDING_ROOT: "https://${SITE_NAME}/orthanc/ui/app/token-landing.html"
@@ -65,15 +68,16 @@ services:
     container_name: keycloak-backend
     depends_on: 
       - keycloak-db
+    restart: unless-stopped
     environment:
-      KEYCLOAK_ADMIN: $KC_ADMIN_USR
-      KEYCLOAK_ADMIN_PASSWORD: $KC_ADMIN_PSW
+      KC_BOOTSTRAP_ADMIN_USERNAME: $KC_ADMIN_USR      # replacing legacy $KEYCLOAK_ADMIN environment variable
+      KC_BOOTSTRAP_ADMIN_PASSWORD: $KC_ADMIN_PSW      # replacing legacy $KC_ADMIN_PSW environment variable
       KC_DB_URL: "jdbc:postgresql://${KC_DB_HOST}:5432/${KC_DB_NAME}"
       KC_DB_USERNAME: $KC_DB_USERNAME
       KC_DB_PASSWORD: $KC_DB_PASSWORD
-      # 2 following lines to uncomment (and adapt) if HTTPS is enabled in nginx
-      KC_HOSTNAME_URL: "https://${SITE_NAME}/keycloak"
-      KC_HOSTNAME_ADMIN_URL: "https://${SITE_NAME}/keycloak"
+      # the following line is required if HTTPS is enabled in nginx
+      KC_HOSTNAME: "https://${SITE_NAME}/keycloak"    # replacing legacy environment variable $KC_HOSTNAME_URL and deprecate legacy environment variable $KC_HOSTNAME_ADMIN_URL
+
 
   orthanc-db:
     image: $POSTGRESQL_DOCKER_IMAGE
