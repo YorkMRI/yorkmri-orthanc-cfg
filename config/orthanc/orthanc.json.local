@@ -71,9 +71,15 @@
             ["post", "^/auth/tokens/decode$", ""],
 
             ["post", "^/tools/find$", "all|view"],
+            ["get", "^/tools/labels$", "all|view"],
+
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|view"],
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/(studies|study|series|instances)$", "all|view"],
             ["get" , "^/instances/([a-f0-9-]+)/(tags|header)$", "all|view"],
+            
+            ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/labels(.*)$", "all|view"],
+            ["put" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/labels(.*)$", "all"],
+
             ["get" , "^/statistics$", "all|view"],
 
             ["put", "^/auth/tokens/(viewer-instant-link|meddream-instant-link)$", "all|view"],

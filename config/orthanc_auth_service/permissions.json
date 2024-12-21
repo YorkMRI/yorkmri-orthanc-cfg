@@ -5,7 +5,7 @@
       "permissions": ["all"]
     },
     "doctor-role": {
-      "authorized_labels": ["*"],
+      "authorized_labels": ["rd-name"],
       "permissions": ["view","download","share","send"]
     },
     "external-role": {

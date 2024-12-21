@@ -12,10 +12,10 @@ function OnStableStudy(studyId, tags, metadata)
   local studyInstUid = tags["StudyInstanceUID"] 
   local referringPhysicianName = tags["ReferringPhysicianName"]
   if referringPhysicianName == nil or referringPhysicianName == '' then
-    print('OnStableStudy: StableAge elapsed, processing study ' .. studyInstUid .. ' but ReferringPhysician is null or blank ')
+    print('OnStableStudy: StableAge elapsed, processing study ' .. studyInstUid .. ' but ReferringPhysician is null or blank. No action to take')
   else
     print('OnStableStudy: StableAge elapsed, labelling study ' .. studyInstUid .. ' with ReferringPhysician ' .. referringPhysicianName)
-    RestApiPut("/studies/" .. studyId .. "/labels/refdoc-" .. makeValidLabel(referringPhysicianName), '')
+    RestApiPut("/studies/" .. studyId .. "/labels/RD-" .. makeValidLabel(referringPhysicianName), '')
   end
 end
 
