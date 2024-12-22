@@ -34,7 +34,6 @@ certs:
 local:
 	$(info --- Configuring Orthanc for local dev ---)
 	@cp config/orthanc/orthanc.json.local config/orthanc/orthanc.json
-	@cp docker-compose.yaml.local docker-compose.yaml
 	@yq e '.services.orthanc-auth-service.environment.SECRET_KEY = "$(AUTH_SERVICE_INTERNAL_SECRET_KEY)"' docker-compose.yaml.local > docker-compose.yaml
 psql:
 	$(info --- Provisioning PostgreSQL database for Keycloak on RDS ---)
@@ -48,7 +47,7 @@ ec2:
 	@echo [makefile] updated configuration on ec2 
 done:
 	$(info --- Configuration completed ---)
-	@echo [makefile] Bootstrapping process:, , then fill 
-	@echo [makefile] 1. Run docker compose up and grab the value for KEYCLOAK_CLIENT_SECRET from stdout
-	@echo [makefile] 2. Edit compose file, update value for KEYCLOAK_CLIENT_SECRET, and set ENABLE_KEYCLOAK_API_KEYS to true
-	@echo [makefile] 3. Restart the application (docker compose down && docker compose up)
+	@echo [makefile] Bootstrapping process:
+	@echo [makefile]   1. Run docker compose up and grab the value for KEYCLOAK_CLIENT_SECRET from stdout
+	@echo [makefile]   2. Edit compose file, update value for KEYCLOAK_CLIENT_SECRET, and set ENABLE_KEYCLOAK_API_KEYS to true
+	@echo [makefile]   3. Restart the application: docker compose down then docker compose up
