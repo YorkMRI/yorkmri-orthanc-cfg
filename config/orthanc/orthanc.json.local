@@ -69,12 +69,14 @@
         "CheckedLevel": "studies",
         "Permissions" : [
             ["post", "^/auth/tokens/decode$", ""],
+            ["put", "^/auth/tokens/viewer-instant-link$", "all|view"],
+            ["put", "^/auth/tokens/download-instant-link$", "all|download"],
+            ["put", "^/auth/tokens/stone-viewer-publication$", "all|share"],
 
-            ["post", "^/tools(.*)$", "all"],
+            ["post", "^/tools/find$", "all|view"],
+            ["get", "^/tools/labels$", "all|view"],
             ["get", "^/tools(.*)$", "all"],
-
-            ["post", "^/tools/find$", "view"],
-            ["get", "^/tools/labels$", "view"],
+            ["post", "^/tools(.*)$", "all"],
 
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|view"],
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/(studies|study|series|instances)$", "all|view"],
@@ -82,14 +84,12 @@
             
             ["get" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/labels(.*)$", "all|view"],
             ["put" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/labels(.*)$", "all"],
+            ["delete" , "^/(patients|studies|series|instances)/([a-f0-9-]+)/labels(.*)$", "all"],
 
-            ["get" , "^/statistics$", "all|view"],
-
-            ["put", "^/auth/tokens/(viewer-instant-link|meddream-instant-link)$", "all|view"],
-            ["put", "^/auth/tokens/(download-instant-link)$", "all|download"],
-
-            ["put", "^/auth/tokens/(stone-viewer-publication|meddream-viewer-publication|osimis-viewer-publication)$", "all|share"],
-
+            ["post", "^/(patients|studies|series|instances)/([a-f0-9-]+)/modify(.*)$", "all|modify"],
+            ["post", "^/(patients|studies|series|instances)/([a-f0-9-]+)/anonymize(.*)$", "all|anonymize"],
+            ["delete" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|delete"],
+            
             ["post", "^/instances$", "all|upload"],
 
             ["get" , "^/jobs/([a-f0-9-]+)$", "all|send|modify|anonymize|q-r-remote-modalities"],
@@ -103,10 +103,8 @@
             ["get" , "^/DICOM_WEB_ROOT/servers$", "all|send|q-r-remote-modalities"],
             ["get" , "^/DICOM_WEB_ROOT/(servers)/(.*)/stow$", "all|send"],
 
-            ["post", "^/(patients|studies|series|instances)/([a-f0-9-]+)/modify(.*)$", "all|modify"],
-            ["post", "^/(patients|studies|series|instances)/([a-f0-9-]+)/anonymize(.*)$", "all|anonymize"],
-
-            ["delete" , "^/(patients|studies|series|instances)/([a-f0-9-]+)$", "all|delete"]
+            ["get" , "^/statistics$", "all|view"],
+            ["get" , "^/system$", "all|view"]
         ]
     },
     "DicomWeb" : {
