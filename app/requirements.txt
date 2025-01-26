@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Orthanc Team SRL <info@orthanc.team>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+pyjwt[crypto]==2.6.0
+fastapi==0.109.1
+jinja2==3.1.4
+pytz==2022.1
+python-dateutil==2.8.2
+uvicorn[standard]==0.18.2
+pytest
+json-with-comments==1.2.1
+httpx
+# TODO: standardize usage of https or requests
+requests
