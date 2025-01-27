@@ -50,9 +50,9 @@ Note, when the services are launched, the standard output for `keycloak-backend`
 2025-01-26 20:28:18 keycloak-backend       | 2025-01-27 01:28:18,640 WARN  [org.keycloak.events] (executor-thread-1) type="CLIENT_LOGIN_ERROR", realmId="51f8e56b-3df7-4a0e-ae5b-4f961f4a3e78", realmName="orthanc", clientId="admin-cli", userId="null", ipAddress="127.0.0.1", error="invalid_client_credentials", grant_type="client_credentials"
 2025-01-26 20:28:18 keycloak-backend       | ### Access denied with the default secret, probably already regenerated. Exiting script...
 ```
-This is normal for the first launch after client secret is set.
+This is normal.
 
-The services are exposed on localhost on port 443. The configuration requires using full domain name, such as:
+Once launched, the services are exposed on localhost on port 443. The configuration requires using full domain name, such as:
 - For Orthanc login: https://orthweb.digihunch.com/orthanc 
 - For User Admin: https://orthweb.digihunch.com/keycloak 
 

@@ -2,8 +2,9 @@
 Hunch Digital Services Inc
 Customization for orthanc_auth_service
 -->
+The baseline is available [here](https://github.com/orthanc-team/orthanc-auth-service/tree/main/sources).
 
-# Orthanc-auth-service
+# orthanc-auth-service
 
 Web service to run next to Orthanc to handle sharing of studies by issuing [JWT](https://jwt.io/) that can then be passed
 in authorization headers that will be checked by the [Authorization plugin](https://book.orthanc-server.com/plugins/authorization.html).
@@ -26,4 +27,4 @@ in authorization headers that will be checked by the [Authorization plugin](http
 | MEDDREAM_TOKEN_SERVICE_URL | -                                          | The URL to the MedDream token service. e.g `http://meddream-token-service:8088/v3/generate`                                                                         |
 | PUBLIC_MEDDREAM_ROOT       | -                                          | The public root URL to access the MedDream viewer. e.g `http://localhost/meddream/`                                                                                 |
 
-3 demo setups are available [here](https://github.com/orthanc-team/orthanc-auth-service/tree/main/minimal-setup).
+
