@@ -1,4 +1,6 @@
 .PHONY: TBD
+# For consistent command interpreter behaviour across Linux and Mac, set shell to bash. Otherwise, command substitution breaks
+SHELL := /bin/bash 
 include .env
 CERT_COUNTRY=CA
 CERT_STATE=Ontario
