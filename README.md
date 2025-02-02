@@ -1,55 +1,72 @@
 # Orthanc Configuration Repository
-This repository was spun off from the orthweb project for the orthanc's application configuration.
 
-## Configure on a Laptop (MacOS or Linux) as development environment
+This repository is for configuration management to orchestrate containers to host an Orthanc service. There are two modes:
+1. `DEV` mode: for hosting Orthanc services in a local development environment such as laptop (Linux/MacOS).
+2. `AWS` mode: for hosting Orthanc services on EC2 instances provisioned in the [Orthweb](https://github.com/digihunch/orthweb) project. 
 
-1. Download this repository. If this step has been done by the cloud init script, it would in the current user directory. 
-```sh
-git clone git@github.com:digihunchinc/orthanc-config.git
-```
+The two modes are different in terms of how data store are implemented, as outlined below.
 
-2. Ensure the required packages are installed. Check `dep1` and `dep2` sections for the specific required packages. 
-3. Modify `.env` file to update any username, passwords and image references. Do not use the original password!
-4. Go to the project directory, create local configuration file 
+| Component              | DEV mode | AWS mode |
+| :---------------- | :------: | ----: |
+| Orthanc Database |  local PostgreSQL container   | RDS PostgreSQL |
+| Keycloak Database |  local PostgreSQL container   | RDS PostgreSQL |
+| Storage    |  data directory   | S3 bucket |
+| Default Site URL |  localhost   | EC2 Public DNS name |
 
-```sh
-make dev
-```
-The command should generate `docker-compose.yaml` file based on 
+The configuration is driven by a `makefile` that orchestrate the steps required in each scenario.
+
+## Configure DEV mode on a Laptop (MacOS or Linux)
+Use this mode for development work for customization scripts (e.g. server-side scripting) on a development environment such as Laptop (MacOS/Linux):
+
+1. Clone this repository. It should be cloned to the current user directory:
+      ```sh
+      git clone git@github.com:digihunchinc/orthanc-config.git
+      ```
+
+2. Ensure the required packages are installed. Check `dep` and `dep_ec2` steps for the specific required packages being examined;
+3. Modify `.env` file to update any username, passwords and image references. Do not use the original password! 
+4. Go to the project directory, execute the steps for `dev`: 
+
+      ```sh
+      make dev
+      ```
+      The command should generate `docker-compose.yaml` file based on the variables in `.env` file.
 
 5. Run the following command to bootstrap for the first time, and ensure to monitor the standard output.
 
-```sh
-docker compose up
-```
+      ```sh
+      docker compose up
+      ```
 
-When the launch is nearly completed, the standard output from `keycloak-service` should display a line saying:
+      When the launch is nearly completed, the standard output from `keycloak-service` should display a line saying:
 
-```
-2024-12-21 23:20:49 ########################################################################################
-Here is the secret to use for the KEYCLOAK_CLIENT_SECRET env var in the auth service:
-qzwffmsgeerdaiglowfhwjxhsotbzrdn
-########################################################################################
-```
-Keep a copy of the `KEYCLOAK_CLIENT_SECRET` value.
+      ```
+      2024-12-21 23:20:49 ########################################################################################
+      Here is the secret to use for the KEYCLOAK_CLIENT_SECRET env var in the auth service:
+      qzwffmsgeerdaiglowfhwjxhsotbzrdn
+      ########################################################################################
+      ```
+      Keep a copy of the `KEYCLOAK_CLIENT_SECRET` value. 
 
-5. Go to `docker-compose.yaml` under the environment variables for `orthanc-auth-service`, fill in the `KEYCLOAK_CLIENT_SECRET` value.
-```sh
+6. Go to `docker-compose.yaml` under the environment variables for `orthanc-auth-service`, fill in the `KEYCLOAK_CLIENT_SECRET` value. For example:
+      ```sh
       KEYCLOAK_CLIENT_SECRET: "qzwffmsgeerdaiglowfhwjxhsotbzrdn"
       ENABLE_KEYCLOAK_API_KEYS: "true"    # uncomment after bootstrapping
-```
-Make sure to have both lines uncommented.
+      ```
+      Make sure to have both lines uncommented.
 
-6. Then restart services:
+6. Then restart services one more time until all services are up:
 
-```sh
-docker compose down && docker compose up -d
-```
+      ```sh
+      docker compose down && docker compose up -d
+      ```
 Note, when the services are launched, the standard output for `keycloak-backend` may show the following warning:
+      
 ```
 2025-01-26 20:28:18 keycloak-backend       | 2025-01-27 01:28:18,640 WARN  [org.keycloak.events] (executor-thread-1) type="CLIENT_LOGIN_ERROR", realmId="51f8e56b-3df7-4a0e-ae5b-4f961f4a3e78", realmName="orthanc", clientId="admin-cli", userId="null", ipAddress="127.0.0.1", error="invalid_client_credentials", grant_type="client_credentials"
 2025-01-26 20:28:18 keycloak-backend       | ### Access denied with the default secret, probably already regenerated. Exiting script...
 ```
+
 This is normal.
 
 Once launched, the services are exposed on localhost on port 443. The configuration requires using full domain name, such as:
@@ -58,10 +75,18 @@ Once launched, the services are exposed on localhost on port 443. The configurat
 
 Note that using `localhost` as domain name will NOT work. As a workaround, consider editing hosts file `/etc/hosts`, by adding an entry `127.0.0.1 orthweb.digihunch.com`, and bypass browser warnings.
 
-## Configure on an EC2 instance as a test or production environment
-Similar to above but use a different make command.
+## Configure AWS mode on an EC2 instance
+
+Use this mode for test or production environment an EC2 instance. The configuration should be highly automated, drven by the cloud init script. 
+
+For example, the step to clone the repo, and the step to update variables in `.env` are both to be implemented in the cloud init [script](https://github.com/digihunch/orthweb/blob/main/terraform/modules/ec2/userdata2.tpl). 
+
+The script will then execute a command as defined in the input variable of the Terraform template, which is by default:
 ```sh
-make aws
+cd orthanc-config && make aws
 ```
 
-Check partner specific instructions if your deployment is further customized.
+If the result isn't expected, review the cloud init log at `/var/log/cloud-init-output.log` on the EC2 instance.
+
+## Custom Implementation
+If you have a custom implementation, fork this repo and implement the customization. Then reference the fork from the input variable of the Terraform template in Orthweb.
