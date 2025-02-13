@@ -50,7 +50,7 @@ psql:
 	@echo [makefile][$@] initialized postgresdb for keycloak
 ec2:
 	$(info --- Configuring Orthanc on EC2 with S3 and RDS storage ---) 
-	@jq '.AwsS3Storage = {ConnectionTimeout: 30, RequestTimeout: 1200, RootPath: "image_arvhie", StorageStructure: "flat", BucketName: "$(S3_BUCKET)", Region: "$(S3_REGION)"} | del(.StorageDirectory) | .PostgreSQL.EnableSsl = true | .Plugins += ["/usr/share/orthanc/plugins-available/libOrthancAwsS3Storage.so"] ' config/orthanc/orthanc.json.local > config/orthanc/orthanc.json
+	@jq '.AwsS3Storage = {ConnectionTimeout: 30, RequestTimeout: 1200, RootPath: "image_archive", StorageStructure: "flat", BucketName: "$(S3_BUCKET)", Region: "$(S3_REGION)"} | del(.StorageDirectory) | .PostgreSQL.EnableSsl = true | .Plugins += ["/usr/share/orthanc/plugins-available/libOrthancAwsS3Storage.so"] ' config/orthanc/orthanc.json.local > config/orthanc/orthanc.json
 	@yq e '.services.orthanc-auth-service.environment.SECRET_KEY = "$(AUTH_SERVICE_INTERNAL_SECRET_KEY)" | del(.services.keycloak-db, .services.orthanc-db) | .services.orthanc-service.depends_on |= map(select(. != "orthanc-db")) | .services.keycloak-service.depends_on |= map(select(. != "keycloak-db")) | .services.keycloak-service.environment.KC_DB_URL += "?ssl=true&sslmode=require" ' docker-compose.yaml.local > docker-compose.yaml
 	@echo [makefile][$@] updated configuration on ec2 
 done:
