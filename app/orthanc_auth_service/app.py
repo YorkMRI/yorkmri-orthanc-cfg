@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Orthanc Team SRL <info@orthanc.team>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from fastapi import FastAPI, Request, status, Header, HTTPException, Depends, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import logging
