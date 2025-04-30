@@ -12,6 +12,7 @@ services:
       - 11112:11112
     volumes:
       - ./$SITE_KEY_CERT_FILE:/usr/local/nginx/conf/site.pem:ro
+      - ./config/certs/dicom.pem:/usr/local/nginx/conf/dicom.pem:ro
       - ./config/nginx/:/etc/nginx/:ro
 
   orthanc-service:
